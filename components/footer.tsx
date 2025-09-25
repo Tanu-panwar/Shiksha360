@@ -4,7 +4,7 @@ import Link from "next/link"
 
 export default function Footer() {
   return (
-    <footer className="relative w-full mt-12 border-t border-gray-300 shadow-inner">
+    <footer className="relative w-full border-t border-gray-300 shadow-inner">
       {/* Blue Gradient with Subtle Texture */}
       <div className="absolute inset-0 bg-gradient-to-r from-blue-800 via-blue-500 to-blue-900" />
       <div className="absolute inset-0 bg-[url('/noise-texture.png')] opacity-15 mix-blend-overlay pointer-events-none"></div>
