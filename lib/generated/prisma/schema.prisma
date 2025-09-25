@@ -1,0 +1,619 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  EMPLOYEE
+  MANAGER
+  HR
+  ADMIN
+}
+
+enum EmploymentStatus {
+  ACTIVE
+  INACTIVE
+  TERMINATED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LEAVE
+}
+
+enum ExpenseStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum AssetStatus {
+  AVAILABLE
+  ASSIGNED
+  MAINTENANCE
+  RETIRED
+  LOST
+}
+
+enum PayrollStatus {
+  DRAFT
+  PROCESSED
+  PAID
+  CANCELLED
+}
+
+enum ApplicationStatus {
+  APPLIED
+  UNDER_REVIEW
+  INTERVIEW_SCHEDULED
+  OFFERED
+  REJECTED
+  WITHDRAWN
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  INTERN
+  CONTRACT
+}
+
+enum TrainingStatus {
+  PLANNED
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum EventSource {
+  INTERNAL
+  GOOGLE
+  OUTLOOK
+}
+
+enum NotificationType {
+  GENERAL
+  TASK
+  LEAVE
+  ATTENDANCE
+  PAYROLL
+  EXPENSE
+  ASSET
+  ANNOUNCEMENT
+  CHAT
+}
+
+model User {
+  id           String           @id @default(uuid())
+  name         String
+  email        String           @unique
+  password     String
+  role         Role             @default(EMPLOYEE)
+  employment   EmploymentStatus @default(ACTIVE)
+  phone        String?
+  address      String?
+  joinDate     DateTime?
+  salary       Decimal?         @db.Decimal(12, 2)
+  notes        String?
+  departmentId String?
+  managerId    String?
+
+  department Department? @relation(fields: [departmentId], references: [id], name: "DepartmentUsers")
+  manager    User?       @relation("ManagerReports", fields: [managerId], references: [id])
+  reports    User[]      @relation("ManagerReports")
+
+  tasksCreated    Task[]             @relation("TaskCreatedBy")
+  taskAssignments TaskAssignment[]
+  taskComments    TaskComment[]
+  timeLogs        TaskTimeLog[]
+  attendance      AttendanceRecord[]
+
+  leaves          Leave[] @relation("UserLeaves")
+  leavesToApprove Leave[] @relation("LeaveApprover")
+
+  messagesSent ChatMessage[]     @relation("SentMessages")
+  messagesRecv ChatMessage[]     @relation("ReceivedMessages")
+  chatGroups   ChatGroupMember[]
+
+  notifications Notification[]
+  documents     Document[]
+  companyDocs   CompanyDocument[] @relation("CompanyDocUploader")
+
+  expenses                Expense[]           @relation("ExpenseOwner")
+  expensesApproved        Expense[]           @relation("ExpenseApprover")
+  payrolls                Payroll[]           @relation("PayrollUser")
+  generatedPays           Payroll[]           @relation("PayrollGeneratedBy")
+  performanceReviewsGiven PerformanceReview[] @relation("ReviewBy")
+  performanceReviewsGot   PerformanceReview[] @relation("ReviewFor")
+
+  assetsOwned     Asset[]            @relation("AssetAssignee")
+  jobPosts        JobPost[]          @relation("JobPostedBy")
+  applications    Application[]
+  eventsOrganized CalendarEvent[]    @relation("EventOrganizer")
+  eventAttendees  CalendarAttendee[]
+
+  trainingEnrollments TrainingEnrollment[]
+  announcementsMade   Announcement[]       @relation("AnnouncementAuthor")
+
+  preferences UserPreference?
+  auditLogs   AuditLog[]      @relation("AuditActor")
+
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  headedDepartments Department[] @relation("DepartmentHead")
+}
+
+model Department {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  description String?
+  headId      String?
+  head        User?   @relation("DepartmentHead", fields: [headId], references: [id])
+  users       User[]  @relation("DepartmentUsers")
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Announcement Announcement[]
+  JobPost      JobPost[]
+}
+
+model Task {
+  id          String       @id @default(uuid())
+  title       String
+  description String?
+  priority    TaskPriority @default(MEDIUM)
+  status      TaskStatus   @default(PENDING)
+  dueDate     DateTime?
+  createdById String
+
+  createdBy   User             @relation("TaskCreatedBy", fields: [createdById], references: [id])
+  assignments TaskAssignment[]
+  comments    TaskComment[]
+  timeLogs    TaskTimeLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdById])
+  @@index([status])
+  @@index([priority])
+}
+
+model TaskAssignment {
+  id         String   @id @default(uuid())
+  userId     String
+  taskId     String
+  assignedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  task Task @relation(fields: [taskId], references: [id])
+
+  @@unique([userId, taskId])
+  @@index([taskId])
+  @@index([userId])
+}
+
+model TaskComment {
+  id      String @id @default(uuid())
+  taskId  String
+  userId  String
+  content String
+
+  task Task @relation(fields: [taskId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([taskId])
+  @@index([userId])
+}
+
+model TaskTimeLog {
+  id              String    @id @default(uuid())
+  taskId          String
+  userId          String
+  startedAt       DateTime
+  endedAt         DateTime?
+  durationSeconds Int?
+
+  task Task @relation(fields: [taskId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([taskId])
+  @@index([userId])
+}
+
+model AttendanceRecord {
+  id        String           @id @default(uuid())
+  userId    String
+  date      DateTime
+  clockIn   DateTime?
+  clockOut  DateTime?
+  status    AttendanceStatus @default(PRESENT)
+  ipAddress String?
+  location  String?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, date])
+  @@index([userId, date])
+}
+
+model Leave {
+  id         String      @id @default(uuid())
+  userId     String
+  startDate  DateTime
+  endDate    DateTime
+  reason     String?
+  status     LeaveStatus @default(PENDING)
+  approverId String?
+
+  user     User  @relation("UserLeaves", fields: [userId], references: [id])
+  approver User? @relation("LeaveApprover", fields: [approverId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+model ChatMessage {
+  id         String   @id @default(uuid())
+  senderId   String
+  receiverId String?
+  groupId    String?
+  content    String
+  timestamp  DateTime @default(now())
+
+  sender   User       @relation("SentMessages", fields: [senderId], references: [id])
+  receiver User?      @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  group    ChatGroup? @relation(fields: [groupId], references: [id])
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([groupId])
+  @@index([timestamp])
+}
+
+model ChatGroup {
+  id        String            @id @default(uuid())
+  name      String
+  messages  ChatMessage[]
+  members   ChatGroupMember[]
+  createdAt DateTime          @default(now())
+}
+
+model ChatGroupMember {
+  id       String   @id @default(uuid())
+  groupId  String
+  userId   String
+  joinedAt DateTime @default(now())
+
+  group ChatGroup @relation(fields: [groupId], references: [id])
+  user  User      @relation(fields: [userId], references: [id])
+
+  @@unique([groupId, userId])
+  @@index([userId])
+}
+
+model Announcement {
+  id           String   @id @default(uuid())
+  title        String
+  content      String
+  authorId     String
+  // optional scoping
+  departmentId String?
+  createdAt    DateTime @default(now())
+
+  author     User        @relation("AnnouncementAuthor", fields: [authorId], references: [id])
+  department Department? @relation(fields: [departmentId], references: [id])
+
+  @@index([departmentId])
+  @@index([authorId])
+}
+
+model Notification {
+  id      String           @id @default(uuid())
+  userId  String
+  title   String
+  message String
+  type    NotificationType @default(GENERAL)
+  data    Json?
+  read    Boolean          @default(false)
+
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+  @@index([type])
+}
+
+model Document {
+  id      String @id @default(uuid())
+  userId  String
+  title   String
+  fileUrl String
+
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model CompanyDocument {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  fileUrl     String
+  uploadedBy  String
+  createdAt   DateTime @default(now())
+
+  uploader User @relation("CompanyDocUploader", fields: [uploadedBy], references: [id])
+}
+
+model Expense {
+  id           String        @id @default(uuid())
+  userId       String
+  title        String
+  description  String?
+  category     String?
+  amount       Decimal       @db.Decimal(12, 2)
+  currency     String        @default("INR")
+  date         DateTime
+  status       ExpenseStatus @default(PENDING)
+  receiptUrl   String?
+  submittedAt  DateTime      @default(now())
+  approvedAt   DateTime?
+  approvedById String?
+
+  owner    User  @relation("ExpenseOwner", fields: [userId], references: [id])
+  approver User? @relation("ExpenseApprover", fields: [approvedById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([approvedById])
+}
+
+model Asset {
+  id           String      @id @default(uuid())
+  tag          String      @unique
+  name         String
+  type         String?
+  serialNumber String?     @unique
+  purchaseDate DateTime?
+  status       AssetStatus @default(AVAILABLE)
+  assignedToId String?
+  assignedAt   DateTime?
+  location     String?
+  notes        String?
+
+  assignedTo User? @relation("AssetAssignee", fields: [assignedToId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([assignedToId])
+  @@index([status])
+}
+
+model Payroll {
+  id            String        @id @default(uuid())
+  userId        String
+  month         Int // 1..12
+  year          Int
+  baseSalary    Decimal       @db.Decimal(12, 2)
+  allowances    Decimal       @default(0) @db.Decimal(12, 2)
+  deductions    Decimal       @default(0) @db.Decimal(12, 2)
+  netPay        Decimal       @db.Decimal(12, 2)
+  currency      String        @default("INR")
+  status        PayrollStatus @default(DRAFT)
+  generatedById String?
+  generatedAt   DateTime?
+  paidAt        DateTime?
+  slipUrl       String?
+
+  user        User  @relation("PayrollUser", fields: [userId], references: [id])
+  generatedBy User? @relation("PayrollGeneratedBy", fields: [generatedById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  // User      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, month, year])
+  @@index([status])
+}
+
+model PerformanceReview {
+  id           String   @id @default(uuid())
+  revieweeId   String
+  reviewerId   String
+  periodStart  DateTime
+  periodEnd    DateTime
+  overallScore Int // 1..10 or as per UI
+  kpiScores    Json?
+  feedback     String?
+
+  reviewee User @relation("ReviewFor", fields: [revieweeId], references: [id])
+  reviewer User @relation("ReviewBy", fields: [reviewerId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([revieweeId])
+  @@index([reviewerId])
+  @@index([periodStart, periodEnd])
+}
+
+model JobPost {
+  id           String  @id @default(uuid())
+  title        String
+  departmentId String?
+  type         JobType @default(FULL_TIME)
+  location     String?
+  description  String?
+  postedById   String
+  isActive     Boolean @default(true)
+
+  department   Department?   @relation(fields: [departmentId], references: [id])
+  postedBy     User          @relation("JobPostedBy", fields: [postedById], references: [id])
+  applications Application[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([departmentId])
+  @@index([isActive])
+}
+
+model Application {
+  id              String            @id @default(uuid())
+  jobPostId       String
+  applicantUserId String?
+  applicantName   String
+  applicantEmail  String
+  resumeUrl       String?
+  coverLetter     String?
+  status          ApplicationStatus @default(APPLIED)
+  notes           String?
+
+  jobPost   JobPost @relation(fields: [jobPostId], references: [id])
+  applicant User?   @relation(fields: [applicantUserId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([jobPostId])
+  @@index([status])
+}
+
+model TrainingProgram {
+  id          String         @id @default(uuid())
+  title       String
+  description String?
+  trainer     String?
+  location    String?
+  startDate   DateTime
+  endDate     DateTime
+  status      TrainingStatus @default(PLANNED)
+  mode        String? // Online/Offline/Hybrid
+  maxSeats    Int?
+
+  enrollments TrainingEnrollment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+}
+
+model TrainingEnrollment {
+  id             String    @id @default(uuid())
+  trainingId     String
+  userId         String
+  enrolledAt     DateTime  @default(now())
+  completedAt    DateTime?
+  certificateUrl String?
+
+  training TrainingProgram @relation(fields: [trainingId], references: [id])
+  user     User            @relation(fields: [userId], references: [id])
+
+  @@unique([trainingId, userId])
+  @@index([userId])
+}
+
+model CalendarEvent {
+  id             String      @id @default(uuid())
+  title          String
+  description    String?
+  organizerId    String
+  startTime      DateTime
+  endTime        DateTime
+  source         EventSource @default(INTERNAL)
+  googleMeetLink String?
+  location       String?
+
+  organizer User               @relation("EventOrganizer", fields: [organizerId], references: [id])
+  attendees CalendarAttendee[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizerId])
+  @@index([startTime, endTime])
+}
+
+model CalendarAttendee {
+  id       String  @id @default(uuid())
+  eventId  String
+  userId   String
+  response String? // accepted/declined/tentative
+
+  event CalendarEvent @relation(fields: [eventId], references: [id])
+  user  User          @relation(fields: [userId], references: [id])
+
+  @@unique([eventId, userId])
+  @@index([userId])
+}
+
+model UserPreference {
+  id                   String  @id @default(uuid())
+  userId               String  @unique
+  theme                String? // light/dark/system
+  locale               String? // en-IN etc.
+  notificationsEnabled Boolean @default(true)
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  actorId   String?
+  entity    String // e.g., "Expense", "Task"
+  entityId  String
+  action    String // CREATE/UPDATE/DELETE/APPROVE/REJECT
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  actor User? @relation("AuditActor", fields: [actorId], references: [id])
+
+  @@index([entity, entityId])
+  @@index([actorId])
+}
