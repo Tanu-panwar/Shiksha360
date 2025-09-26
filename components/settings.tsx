@@ -127,7 +127,7 @@ export function Settings() {
                     <Badge variant="secondary" className="capitalize">
                       {user?.role}
                     </Badge>
-                    <span className="text-sm text-gray-500">Contact HR to change role</span>
+                    <span className="text-sm text-gray-500">Contact Admin to change the Role</span>
                   </div>
                 </div>
               </div>

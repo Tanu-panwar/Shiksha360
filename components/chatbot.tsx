@@ -28,7 +28,7 @@ export function Chatbot({ isOpen, onToggle }: ChatbotProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: `Hello ${user?.name}! Welcome to the Zrosis HR Assistant. I can help you navigate the HR system, answer policy questions, and guide you through various tasks. What would you like to know about?`,
+      text: `Hello ${user?.name}! Welcome to the Shiksha360 Assistant. I can help you navigate the Shiksha360 system, answer query questions, and guide you through various tasks. What would you like to know about?`,
       sender: "bot",
       timestamp: new Date(),
     },
@@ -71,8 +71,8 @@ export function Chatbot({ isOpen, onToggle }: ChatbotProps) {
     }
 
     if (message.includes("employee") || message.includes("staff") || message.includes("team member")) {
-      if (user?.role === "hr" || user?.role === "admin") {
-        return "As an HR user, you can manage employees through 'Employee Management'. Add new employees, update profiles, assign departments, and track performance. You also have access to recruitment and department management."
+      if (user?.role === "teacher" || user?.role === "admin") {
+        return "As an Teacher user, you can manage employees through 'Employee Management'. Add new employees, update profiles, assign departments, and track performance. You also have access to recruitment and department management."
       }
       return "You can view team information in 'Departments' and communicate with colleagues through 'Communication'. For employee-related requests, contact your HR department."
     }
@@ -182,7 +182,7 @@ For specific questions, try asking about policies, procedures, or any HR topic. 
         <CardHeader className="flex flex-row items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
           <div className="flex items-center gap-2">
             <Bot className="h-5 w-5" />
-            <CardTitle className="text-sm font-medium">HR Assistant</CardTitle>
+            <CardTitle className="text-sm font-medium">Shiksha360 Assistant</CardTitle>
             <Badge variant="secondary" className="bg-green-100 text-green-800 text-xs">
               Online
             </Badge>

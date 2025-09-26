@@ -1,20 +1,18 @@
 "use client"
 import { useState } from "react"
 import {
-  Home, Calendar, Clock, FileText, GraduationCap, BookOpen, ClipboardList, Utensils, BarChart2, Megaphone, Settings, LogOut, Menu, Bell, Bot
+  Home, Calendar, Clock, BookOpen, ClipboardList, Utensils, BarChart2, Megaphone, Settings, LogOut, Menu, Bell, Bot
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useAuth } from "@/contexts/auth-context"
 import { AttendanceTracking } from "@/components/attendance-tracking"
 import { InteractiveCalendar } from "@/components/interactive-calendar"
-import { DocumentManagement } from "@/components/document-management"
-import { TrainingDevelopment } from "@/components/training-development"
-import { EnhancedChat } from "@/components/enhanced-chat"
 import { Settings as SettingsComponent } from "@/components/settings"
 import { NotificationSystem } from "@/components/notification-system"
 import { Chatbot } from "@/components/chatbot"
 import { TeacherDashboard } from "@/components/teacher-dashboard"
+import { StudentDashboard } from "@/components/student-dashboard"
 import TeacherClasses from "@/components/TeacherClasses";
 import TeacherAssignment from "@/components/TeacherAssignment";
 import AddAssignment from "@/components/AddAssignment"
@@ -46,33 +44,46 @@ export default function Dashboard() {
     { id: "settings", label: "Settings", icon: Settings },
   ]
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case "dashboard": return <TeacherDashboard />
-      case "attendance": return <AttendanceTracking />
-      case "calender": return <InteractiveCalendar />
-      case "settings": return <Settings />
-      case "classes": return <TeacherClasses setActiveTab={setActiveTab} setSelectedClass={setSelectedClass} />
-      case "assignments": return <TeacherAssignment setActiveTab={setActiveTab} setSelectedAssignment={setSelectedAssignment} />
-      case "add-assignment": return <AddAssignment />
-      case "assignment-details":
-        return (
-          <AssignmentDetails
-            assignment={selectedAssignment}
-            setActiveTab={setActiveTab}
-          />
-        );
-      case "class-details":
-        return (
-          <ClassDetails
-            selectedClass={selectedClass}
-            setActiveTab={setActiveTab}
-          />
-        );
-      case "reports": return <TeacherReports />
+  const studentTabs = [
+    { id: "dashboard", label: "Dashboard", icon: Home },
+    { id: "assignments", label: "Assignments", icon: ClipboardList },
+    { id: "attendance", label: "My Attendance", icon: Clock },
+    { id: "calender", label: "Calendar", icon: Calendar },
+    { id: "meals", label: "Mid-Day Meal", icon: Utensils },
+    { id: "grades", label: "Grades", icon: BarChart2 },
+    { id: "announcements", label: "Announcements", icon: Megaphone },
+    { id: "settings", label: "Settings", icon: Settings },
+  ]
+  const tabs = user?.role === "teacher" ? teacherTabs : studentTabs
 
-      case "meals": return <MidDayMeal />
-      default: return <div className="p-8 text-center text-gray-500">Coming soon...</div>
+  const renderContent = () => {
+    if (user?.role === "teacher") {
+      switch (activeTab) {
+        case "dashboard": return <TeacherDashboard />
+        case "attendance": return <AttendanceTracking />
+        case "calender": return <InteractiveCalendar />
+        case "settings": return <SettingsComponent />
+        case "classes": return <TeacherClasses setActiveTab={setActiveTab} setSelectedClass={setSelectedClass} />
+        case "assignments": return <TeacherAssignment setActiveTab={setActiveTab} setSelectedAssignment={setSelectedAssignment} />
+        case "add-assignment": return <AddAssignment />
+        case "assignment-details": return <AssignmentDetails assignment={selectedAssignment} setActiveTab={setActiveTab} />
+        case "class-details": return <ClassDetails selectedClass={selectedClass} setActiveTab={setActiveTab} />
+        case "reports": return <TeacherReports />
+        case "meals": return <MidDayMeal />
+        default: return <div className="p-8 text-center text-gray-500">Coming soon...</div>
+      }
+    } else {
+      switch (activeTab) {
+        case "dashboard": return <StudentDashboard />
+        case "attendance": return <AttendanceTracking />
+        case "calender": return <InteractiveCalendar />
+        case "settings": return <SettingsComponent />
+        case "assignments": return <div className="p-8">Student assignments view coming soon</div>
+        case "grades": return <div className="p-8">Grades view coming soon</div>
+        case "meals": return <MidDayMeal />
+        case "announcements": return <div className="p-8">Announcements for students</div>
+        default: return <div className="p-8 text-center text-gray-500">Coming soon...</div>
+      }
     }
   }
 
@@ -94,7 +105,7 @@ export default function Dashboard() {
       <nav className="flex-1 p-4 space-y-1">
 
         {/* Tabs */}
-        {teacherTabs.map(({ id, label, icon: Icon }) => {
+        {tabs.map(({ id, label, icon: Icon }) => {
           const isActive = activeTab === id
           return (
             <button
@@ -213,7 +224,7 @@ export default function Dashboard() {
       </div>
 
       {/* Chatbot */}
-      {/* {showChatbot && <Chatbot isOpen={showChatbot} onToggle={() => setShowChatbot(false)} />} */}
+      {showChatbot && <Chatbot isOpen={showChatbot} onToggle={() => setShowChatbot(false)} />}
     </div>
   )
 }
