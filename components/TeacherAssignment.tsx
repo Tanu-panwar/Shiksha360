@@ -37,6 +37,30 @@ export default function TeacherAssignments({ setActiveTab, setSelectedAssignment
             submissions: "10/30",
             status: "Overdue",
         },
+        {
+            title: "History Project",
+            subject: "History",
+            class: "Class 9D",
+            dueDate: "29 Sep 2025",
+            submissions: "15/25",
+            status: "Pending",
+        },
+        {
+            title: "Geography Map Assignment",
+            subject: "Geography",
+            class: "Class 10E",
+            dueDate: "27 Sep 2025",
+            submissions: "20/27",
+            status: "Pending",
+        },
+        {
+            title: "Computer Science Coding Task",
+            subject: "Computer Science",
+            class: "Class 8F",
+            dueDate: "26 Sep 2025",
+            submissions: "18/29",
+            status: "Pending",
+        },
     ];
 
     return (

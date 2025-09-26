@@ -10,6 +10,7 @@ import { Users, BookOpen, Calendar, FileText } from "lucide-react";
 
 export default function TeacherClasses({ setActiveTab, setSelectedClass }) {
     // Dummy class data – API se fetch karoge toh ye dynamic ho jayega
+
     const classes = [
         {
             name: "Class 8A",
@@ -32,6 +33,27 @@ export default function TeacherClasses({ setActiveTab, setSelectedClass }) {
             schedule: "Mon–Fri, 11:00–11:45 AM",
             assignments: 2,
         },
+        {
+            name: "Class 9D",
+            subject: "History",
+            students: 25,
+            schedule: "Mon–Fri, 12:00–12:45 PM",
+            assignments: 3,
+        },
+        {
+            name: "Class 10E",
+            subject: "Geography",
+            students: 27,
+            schedule: "Mon–Fri, 1:00–1:45 PM",
+            assignments: 4,
+        },
+        {
+            name: "Class 8F",
+            subject: "Computer Science",
+            students: 29,
+            schedule: "Mon–Fri, 2:00–2:45 PM",
+            assignments: 5,
+        }
     ];
 
     return (
