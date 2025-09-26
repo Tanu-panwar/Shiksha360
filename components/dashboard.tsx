@@ -15,6 +15,14 @@ import { Settings as SettingsComponent } from "@/components/settings"
 import { NotificationSystem } from "@/components/notification-system"
 import { Chatbot } from "@/components/chatbot"
 import { TeacherDashboard } from "@/components/teacher-dashboard"
+import TeacherClasses from "@/components/TeacherClasses";
+import TeacherAssignment from "@/components/TeacherAssignment";
+import AddAssignment from "@/components/AddAssignment"
+import AssignmentDetails from "./AssignmentDetails"
+import ClassDetails from "./ClassDetails"
+import MidDayMeal from "@/components/MidDayMeal";
+import TeacherReports from "@/components/TeacherReports";
+
 
 export default function Dashboard() {
   const { user, logout } = useAuth()
@@ -22,6 +30,8 @@ export default function Dashboard() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [showChatbot, setShowChatbot] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
+  const [selectedAssignment, setSelectedAssignment] = useState(null);
+  const [selectedClass, setSelectedClass] = useState(null);
 
 
   const teacherTabs = [
@@ -41,52 +51,71 @@ export default function Dashboard() {
       case "dashboard": return <TeacherDashboard />
       case "attendance": return <AttendanceTracking />
       case "calender": return <InteractiveCalendar />
-      case "settings": return <Settings/>
+      case "settings": return <Settings />
+      case "classes": return <TeacherClasses setActiveTab={setActiveTab} setSelectedClass={setSelectedClass} />
+      case "assignments": return <TeacherAssignment setActiveTab={setActiveTab} setSelectedAssignment={setSelectedAssignment} />
+      case "add-assignment": return <AddAssignment />
+      case "assignment-details":
+        return (
+          <AssignmentDetails
+            assignment={selectedAssignment}
+            setActiveTab={setActiveTab}
+          />
+        );
+      case "class-details":
+        return (
+          <ClassDetails
+            selectedClass={selectedClass}
+            setActiveTab={setActiveTab}
+          />
+        );
+      case "reports": return <TeacherReports />
+
+      case "meals": return <MidDayMeal />
       default: return <div className="p-8 text-center text-gray-500">Coming soon...</div>
     }
   }
 
-const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => (
-  <div className="flex flex-col h-full bg-white">
-    {/* App Branding */}
-    <div className="p-6 border-b border-blue-100 bg-blue-50/30 backdrop-blur-md">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-300 rounded-xl flex items-center justify-center">
-          <span className="text-white font-bold text-lg">S</span>
-        </div>
-        <div>
-          <h1 className="text-xl font-bold text-blue-800">Shiksha360</h1>
+  const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => (
+    <div className="flex flex-col h-full bg-white">
+      {/* App Branding */}
+      <div className="p-6 border-b border-blue-100 bg-blue-50/30 backdrop-blur-md">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-300 rounded-xl flex items-center justify-center">
+            <span className="text-white font-bold text-lg">S</span>
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-blue-800">Shiksha360</h1>
+          </div>
         </div>
       </div>
-    </div>
 
-    {/* Navigation */}
-    <nav className="flex-1 p-4 space-y-1">
-      
-      {/* Tabs */}
-      {teacherTabs.map(({ id, label, icon: Icon }) => {
-        const isActive = activeTab === id
-        return (
-          <button
-            key={id}
-            onClick={() => {
-              setActiveTab(id)
-              onItemClick?.()
-            }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200 ${
-              isActive
+      {/* Navigation */}
+      <nav className="flex-1 p-4 space-y-1">
+
+        {/* Tabs */}
+        {teacherTabs.map(({ id, label, icon: Icon }) => {
+          const isActive = activeTab === id
+          return (
+            <button
+              key={id}
+              onClick={() => {
+                setActiveTab(id)
+                onItemClick?.()
+              }}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200 ${isActive
                 ? "bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 shadow-sm"
                 : "hover:bg-blue-50 border border-transparent"
-            }`}
-          >
-            <Icon className={`w-5 h-5 ${isActive ? "text-blue-600" : "text-gray-500"}`} />
-            <span className={`font-medium ${isActive ? "text-blue-900" : "text-gray-700"}`}>{label}</span>
-          </button>
-        )
-      })}
-    </nav>
-  </div>
-)
+                }`}
+            >
+              <Icon className={`w-5 h-5 ${isActive ? "text-blue-600" : "text-gray-500"}`} />
+              <span className={`font-medium ${isActive ? "text-blue-900" : "text-gray-700"}`}>{label}</span>
+            </button>
+          )
+        })}
+      </nav>
+    </div>
+  )
 
   return (
     <div className="flex h-screen border-b border-blue-100 bg-blue-50/30 backdrop-blur-md">
