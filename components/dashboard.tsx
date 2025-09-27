@@ -97,6 +97,7 @@ export default function Dashboard() {
   const renderContent = () => {
     if (user?.role === "teacher") {
       switch (activeTab) {
+
         case "dashboard": return <TeacherDashboard />
         case "attendance": return <AttendanceTracking />
         case "calender": return <InteractiveCalendar />
@@ -163,6 +164,12 @@ export default function Dashboard() {
           <div>
             <h1 className="text-xl font-bold text-blue-800">Shiksha360</h1>
           </div>
+        </div>
+        <div>
+          <h5 className="text-md mt-0 mb-0 px-12 font-semibold text-blue-800 py-1 capitalize">
+            {user?.role} Dashboard
+          </h5>
+
         </div>
       </div>
 

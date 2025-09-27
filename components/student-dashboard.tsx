@@ -1,14 +1,14 @@
 import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    CardDescription,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
 } from "@/components/ui/card";
 import { useAuth } from "@/contexts/auth-context";
 import {
-    Landmark,
-    
+  Landmark,
+
 } from "lucide-react"
 
 export function StudentDashboard() {
@@ -16,6 +16,7 @@ export function StudentDashboard() {
 
   return (
     <div className="p-6 space-y-8">
+      {/* <h1 className="text-3xl font-bold text-blue-900">Student Dashboard</h1> */}
       {/* Row 1: Core Student Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <MetricCard
@@ -117,28 +118,28 @@ export function StudentDashboard() {
 
 // Reusable Metric Card Component
 function MetricCard({
-    title,
-    description,
-    value,
-    color,
-    trend,
+  title,
+  description,
+  value,
+  color,
+  trend,
 }: {
-    title: string;
-    description: string;
-    value: string;
-    color: string;
-    trend: string;
+  title: string;
+  description: string;
+  value: string;
+  color: string;
+  trend: string;
 }) {
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>{title}</CardTitle>
-                <CardDescription>{description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <p className={`text-3xl font-bold ${color}`}>{value}</p>
-                <p className="text-xs text-muted-foreground">{trend}</p>
-            </CardContent>
-        </Card>
-    );
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p className={`text-3xl font-bold ${color}`}>{value}</p>
+        <p className="text-xs text-muted-foreground">{trend}</p>
+      </CardContent>
+    </Card>
+  );
 }

@@ -14,8 +14,8 @@ import {
     BarChart2,
     Landmark,
     BookOpenText,
-  School,
-  Utensils,
+    School,
+    Utensils,
 } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context";
 import {
@@ -107,6 +107,7 @@ export function TeacherDashboard() {
 
     return (
         <div className="p-6 space-y-8">
+            {/* <h1 className="text-3xl font-bold text-blue-900">Teacher Dashboard</h1> */}
             {/* Row 1: Core Metrics */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <MetricCard

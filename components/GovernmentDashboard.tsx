@@ -60,7 +60,7 @@ function MetricCard({
 export default function GovernmentDashboard() {
     return (
         <div className="p-6 space-y-10">
-            <h1 className="text-3xl font-bold text-blue-900">Government Schools Dashboard</h1>
+            {/* <h1 className="text-3xl font-bold text-blue-900">Government Schools Dashboard</h1> */}
 
             {/* Section 1: Top Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
