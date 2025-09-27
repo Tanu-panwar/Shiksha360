@@ -20,6 +20,14 @@ import AssignmentDetails from "./AssignmentDetails"
 import ClassDetails from "./ClassDetails"
 import MidDayMeal from "@/components/MidDayMeal";
 import TeacherReports from "@/components/TeacherReports";
+import MyClasses from "./MyClasses"
+import StudentAssignments from "./StudentAssignments"
+import StudentExams from "./StudentExam"
+import StudentPerformance from "./StudentPerformance"
+import StudentCalendar from "./StudentCalendar"
+import StudentMidDayMeal from "./StudentMidDayMeal"
+import StudentGrades from "./StudentGrades"
+import StudentAnnouncements from "./StudentAnnouncements"
 
 
 export default function Dashboard() {
@@ -46,12 +54,15 @@ export default function Dashboard() {
 
   const studentTabs = [
     { id: "dashboard", label: "Dashboard", icon: Home },
-    { id: "assignments", label: "Assignments", icon: ClipboardList },
+    { id: "classes", label: "My Classes", icon: BookOpen },
+    { id: "assignments", label: "Assignments/Homework", icon: ClipboardList },
     { id: "attendance", label: "My Attendance", icon: Clock },
-    { id: "calender", label: "Calendar", icon: Calendar },
+    { id: "exams", label: "Exams/Tests", icon: BookOpen },
+    { id: "performance", label: "Performance/Reports", icon: BarChart2 },
+    { id: "calender", label: "Calendar/Schedule", icon: Calendar },
     { id: "meals", label: "Mid-Day Meal", icon: Utensils },
     { id: "grades", label: "Grades", icon: BarChart2 },
-    { id: "announcements", label: "Announcements", icon: Megaphone },
+    { id: "announcements", label: "Announcements/Notices", icon: Megaphone },
     { id: "settings", label: "Settings", icon: Settings },
   ]
   const tabs = user?.role === "teacher" ? teacherTabs : studentTabs
@@ -75,13 +86,17 @@ export default function Dashboard() {
     } else {
       switch (activeTab) {
         case "dashboard": return <StudentDashboard />
+        case "classes": return <MyClasses />
+        case "assignments": return <StudentAssignments />
+        case "exams": return <StudentExams />
         case "attendance": return <AttendanceTracking />
-        case "calender": return <InteractiveCalendar />
+        case "calender": return <StudentCalendar />
+        case "performance": return <StudentPerformance />
         case "settings": return <SettingsComponent />
         case "assignments": return <div className="p-8">Student assignments view coming soon</div>
-        case "grades": return <div className="p-8">Grades view coming soon</div>
-        case "meals": return <MidDayMeal />
-        case "announcements": return <div className="p-8">Announcements for students</div>
+        case "grades": return <StudentGrades />
+        case "meals": return <StudentMidDayMeal />
+        case "announcements": return <StudentAnnouncements />
         default: return <div className="p-8 text-center text-gray-500">Coming soon...</div>
       }
     }
