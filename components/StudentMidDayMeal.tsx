@@ -75,19 +75,19 @@ export default function StudentMidDayMeal() {
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center text-sm">
                         <div className="p-3 bg-green-50 rounded-lg shadow-sm">
                             <p className="font-semibold text-gray-800">Monday</p>
-                            <p className="text-gray-600">28/30 Students</p>
+                            <p className="text-green-600">Present</p>
                         </div>
                         <div className="p-3 bg-green-50 rounded-lg shadow-sm">
                             <p className="font-semibold text-gray-800">Tuesday</p>
-                            <p className="text-gray-600">27/30 Students</p>
+                            <p className="text-green-600">Present</p>
                         </div>
                         <div className="p-3 bg-green-50 rounded-lg shadow-sm">
                             <p className="font-semibold text-gray-800">Wednesday</p>
-                            <p className="text-gray-600">29/30 Students</p>
+                            <p className="text-red-800">Absent</p>
                         </div>
                         <div className="p-3 bg-green-50 rounded-lg shadow-sm">
                             <p className="font-semibold text-gray-800">Thursday</p>
-                            <p className="text-gray-600">26/30 Students</p>
+                            <p className="text-green-600">Present</p>
                         </div>
                     </div>
                 </CardContent>

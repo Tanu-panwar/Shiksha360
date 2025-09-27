@@ -17,20 +17,6 @@ const exams = [
         status: "Upcoming",
     },
     {
-        title: "English Literature Test",
-        subject: "English",
-        date: "20 Sep 2025",
-        status: "Completed",
-        score: "78/100",
-    },
-    {
-        title: "History Quiz",
-        subject: "History",
-        date: "22 Sep 2025",
-        status: "Completed",
-        score: "85/100",
-    },
-    {
         title: "Geography Exam",
         subject: "Geography",
         date: "28 Sep 2025",
@@ -41,6 +27,20 @@ const exams = [
         subject: "Computer Science",
         date: "15 Oct 2025",
         status: "Upcoming",
+    },
+    {
+        title: "History Quiz",
+        subject: "History",
+        date: "22 Sep 2025",
+        status: "Completed",
+        score: "85/100",
+    },
+    {
+        title: "English Literature Test",
+        subject: "English",
+        date: "20 Sep 2025",
+        status: "Completed",
+        score: "78/100",
     },
 ];
 

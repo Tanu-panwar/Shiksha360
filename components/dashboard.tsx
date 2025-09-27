@@ -1,7 +1,8 @@
 "use client"
 import { useState } from "react"
 import {
-  Home, Calendar, Clock, BookOpen, ClipboardList, Utensils, BarChart2, Megaphone, Settings, LogOut, Menu, Bot, School
+  Home, Calendar, Clock, BookOpen, ClipboardList, Utensils, BarChart2, Megaphone, Settings, LogOut, Menu, Bot, School,
+  User
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -29,6 +30,13 @@ import StudentMidDayMeal from "./StudentMidDayMeal"
 import StudentGrades from "./StudentGrades"
 import StudentAnnouncements from "./StudentAnnouncements"
 import GovernmentDashboard from "./GovernmentDashboard"
+import InstitutionPage from "./InstitutionPage"
+import UserManagement from "./UserManagement"
+import PerformanceReports from "./PerformanceReports"
+import ContentCurriculum from "./ContentCurriculum "
+import FeedbackGrievances from "./FeedbackGrievances"
+import GovernmentAnnouncement from "./GovernmentAnnouncement"
+import SchemesScholarships from "./SchemesScholarships"
 
 
 export default function Dashboard() {
@@ -69,7 +77,12 @@ export default function Dashboard() {
   const governmentTabs = [
     { id: "dashboard", label: "Dashboard", icon: Home },
     { id: "schools", label: "Schools", icon: School },
-    { id: "reports", label: "Reports", icon: BarChart2 },
+    { id: "users", label: "User Management", icon: User },
+    { id: "reports", label: "Performance/Reports", icon: BarChart2 },
+    { id: "curriculumn", label: "Content & Curriculum", icon: BookOpen },
+    { id: "feedback", label: "Feedback & Grievances", icon: ClipboardList },
+    { id: "announcement", label: "Announcements & Notifications", icon: Megaphone },
+    { id: "schemes", label: "Schemes & Scholarships", icon: ClipboardList },
     { id: "settings", label: "Settings", icon: Settings },
   ]
   const tabs =
@@ -119,7 +132,13 @@ export default function Dashboard() {
     if (user?.role === "govt") {
       switch (activeTab) {
         case "dashboard": return <GovernmentDashboard />
-        case "schools": return <div className="p-8">Schools list coming soon</div>
+        case "schools": return <InstitutionPage />
+        case "users": return <UserManagement />
+        case "reports": return <PerformanceReports />
+        case "curriculumn": return <ContentCurriculum />
+        case "feedback": return <FeedbackGrievances />
+        case "announcement": return <GovernmentAnnouncement />
+        case "schemes": return <SchemesScholarships />
         case "reports": return <div className="p-8">Reports view coming soon</div>
         case "settings": return <SettingsComponent />
         default: return <div className="p-8 text-center text-gray-500">Coming soon...</div>
