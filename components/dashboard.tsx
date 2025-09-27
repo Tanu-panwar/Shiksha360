@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 import {
-  Home, Calendar, Clock, BookOpen, ClipboardList, Utensils, BarChart2, Megaphone, Settings, LogOut, Menu, Bell, Bot
+  Home, Calendar, Clock, BookOpen, ClipboardList, Utensils, BarChart2, Megaphone, Settings, LogOut, Menu, Bot, School
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -28,6 +28,7 @@ import StudentCalendar from "./StudentCalendar"
 import StudentMidDayMeal from "./StudentMidDayMeal"
 import StudentGrades from "./StudentGrades"
 import StudentAnnouncements from "./StudentAnnouncements"
+import GovernmentDashboard from "./GovernmentDashboard"
 
 
 export default function Dashboard() {
@@ -65,7 +66,20 @@ export default function Dashboard() {
     { id: "announcements", label: "Announcements/Notices", icon: Megaphone },
     { id: "settings", label: "Settings", icon: Settings },
   ]
-  const tabs = user?.role === "teacher" ? teacherTabs : studentTabs
+  const governmentTabs = [
+    { id: "dashboard", label: "Dashboard", icon: Home },
+    { id: "schools", label: "Schools", icon: School },
+    { id: "reports", label: "Reports", icon: BarChart2 },
+    { id: "settings", label: "Settings", icon: Settings },
+  ]
+  const tabs =
+    user?.role === "teacher"
+      ? teacherTabs
+      : user?.role === "student"
+        ? studentTabs
+        : user?.role === "govt"
+          ? governmentTabs
+          : []
 
   const renderContent = () => {
     if (user?.role === "teacher") {
@@ -83,7 +97,9 @@ export default function Dashboard() {
         case "meals": return <MidDayMeal />
         default: return <div className="p-8 text-center text-gray-500">Coming soon...</div>
       }
-    } else {
+    }
+
+    if (user?.role === "student") {
       switch (activeTab) {
         case "dashboard": return <StudentDashboard />
         case "classes": return <MyClasses />
@@ -93,13 +109,28 @@ export default function Dashboard() {
         case "calender": return <StudentCalendar />
         case "performance": return <StudentPerformance />
         case "settings": return <SettingsComponent />
-        case "assignments": return <div className="p-8">Student assignments view coming soon</div>
         case "grades": return <StudentGrades />
         case "meals": return <StudentMidDayMeal />
         case "announcements": return <StudentAnnouncements />
         default: return <div className="p-8 text-center text-gray-500">Coming soon...</div>
       }
     }
+
+    if (user?.role === "govt") {
+      switch (activeTab) {
+        case "dashboard": return <GovernmentDashboard />
+        case "schools": return <div className="p-8">Schools list coming soon</div>
+        case "reports": return <div className="p-8">Reports view coming soon</div>
+        case "settings": return <SettingsComponent />
+        default: return <div className="p-8 text-center text-gray-500">Coming soon...</div>
+      }
+    }
+
+    if (user?.role === "admin") {
+      return <div className="p-8 text-center text-gray-500">Admin panel coming soon...</div>
+    }
+
+    return <div className="p-8 text-center text-gray-500">Coming soon...</div>
   }
 
   const SidebarContent = ({ onItemClick }: { onItemClick?: () => void }) => (
