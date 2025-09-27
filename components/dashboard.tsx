@@ -65,7 +65,7 @@ export default function Dashboard() {
     { id: "dashboard", label: "Dashboard", icon: Home },
     { id: "classes", label: "My Classes", icon: BookOpen },
     { id: "assignments", label: "Assignments/Homework", icon: ClipboardList },
-    { id: "attendance", label: "My Attendance", icon: Clock },
+    // { id: "attendance", label: "My Attendance", icon: Clock },
     { id: "exams", label: "Exams/Tests", icon: BookOpen },
     { id: "performance", label: "Performance/Reports", icon: BarChart2 },
     { id: "calender", label: "Calendar/Schedule", icon: Calendar },
@@ -118,7 +118,7 @@ export default function Dashboard() {
         case "classes": return <MyClasses />
         case "assignments": return <StudentAssignments />
         case "exams": return <StudentExams />
-        case "attendance": return <AttendanceTracking />
+        // case "attendance": return <AttendanceTracking />
         case "calender": return <StudentCalendar />
         case "performance": return <StudentPerformance />
         case "settings": return <SettingsComponent />
