@@ -31,7 +31,7 @@ const GovernmentAnnouncement = () => {
   return (
     <div className="p-6">
       {/* Title */}
-      <h1 className="text-2xl font-bold mb-6">📢 Announcements & Notifications</h1>
+      <h1 className="text-2xl font-bold mb-6">Announcements & Notifications</h1>
 
       {/* Search + Add */}
       <div className="flex items-center justify-between mb-4">

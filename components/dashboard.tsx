@@ -2,25 +2,26 @@
 import { useState } from "react"
 import {
   Home, Calendar, Clock, BookOpen, ClipboardList, Utensils, BarChart2, Megaphone, Settings, LogOut, Menu, Bot, School,
-  User
+  User,
+  PersonStanding
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useAuth } from "@/contexts/auth-context"
-import { AttendanceTracking } from "@/components/attendance-tracking"
-import { InteractiveCalendar } from "@/components/interactive-calendar"
+import AttendanceTracking from "@/app/Teacher/components/TeacherAttendence"
+import CalendarPage from "@/app/Teacher/components/TeacherCalendar"
 import { Settings as SettingsComponent } from "@/components/settings"
 import { NotificationSystem } from "@/components/notification-system"
 import { Chatbot } from "@/components/chatbot"
-import { TeacherDashboard } from "@/components/teacher-dashboard"
+import { TeacherDashboard } from "@/app/Teacher/teacher-dashboard"
 import { StudentDashboard } from "@/components/student-dashboard"
-import TeacherClasses from "@/components/TeacherClasses";
-import TeacherAssignment from "@/components/TeacherAssignment";
-import AddAssignment from "@/components/AddAssignment"
+import TeacherClasses from "@/app/Teacher/components/TeacherClasses";
+import TeacherAssignment from "@/app/Teacher/components/TeacherAssignment";
+import AddAssignment from "@/app/Teacher/components/AddAssignment"
 import AssignmentDetails from "./AssignmentDetails"
 import ClassDetails from "./ClassDetails"
 import MidDayMeal from "@/components/MidDayMeal";
-import TeacherReports from "@/components/TeacherReports";
+import TeacherReports from "@/app/Teacher/components/TeacherReports";
 import MyClasses from "./MyClasses"
 import StudentAssignments from "./StudentAssignments"
 import StudentExams from "./StudentExam"
@@ -29,14 +30,17 @@ import StudentCalendar from "./StudentCalendar"
 import StudentMidDayMeal from "./StudentMidDayMeal"
 import StudentGrades from "./StudentGrades"
 import StudentAnnouncements from "./StudentAnnouncements"
-import GovernmentDashboard from "./GovernmentDashboard"
+import GovernmentDashboard from "../app/Goverment/GovernmentDashboard"
+import AddScheme from "../app/Goverment/AddScheme"
 import InstitutionPage from "./InstitutionPage"
 import UserManagement from "./UserManagement"
 import PerformanceReports from "./PerformanceReports"
 import ContentCurriculum from "./ContentCurriculum "
 import FeedbackGrievances from "./FeedbackGrievances"
-import GovernmentAnnouncement from "./GovernmentAnnouncement"
-import SchemesScholarships from "./SchemesScholarships"
+import GovernmentAnnouncement from "../app/Goverment/GovernmentAnnouncement"
+import SchemesScholarships from "../app/Goverment/SchemesScholarships"
+import StudentsPage from "@/app/Teacher/students/page"
+import TeachersPage from "@/app/Teacher/teachers/page"
 
 
 export default function Dashboard() {
@@ -46,13 +50,14 @@ export default function Dashboard() {
   const [showChatbot, setShowChatbot] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
   const [selectedAssignment, setSelectedAssignment] = useState(null);
+  const [selectedScheme, setSelectedScheme] = useState(null);
   const [selectedClass, setSelectedClass] = useState(null);
 
 
   const teacherTabs = [
     { id: "dashboard", label: "Dashboard", icon: Home },
-    { id: "classes", label: "Classes", icon: BookOpen },
-    { id: "assignments", label: "Assignments", icon: ClipboardList },
+    { id: "students", label: "Students", icon: User },
+    { id: "teachers", label: "Teachers", icon: PersonStanding },
     { id: "attendance", label: "Attendance", icon: Clock },
     { id: "calender", label: "Calender", icon: Calendar },
     { id: "meals", label: "Mid-Day Meal", icon: Utensils },
@@ -65,7 +70,6 @@ export default function Dashboard() {
     { id: "dashboard", label: "Dashboard", icon: Home },
     { id: "classes", label: "My Classes", icon: BookOpen },
     { id: "assignments", label: "Assignments/Homework", icon: ClipboardList },
-    // { id: "attendance", label: "My Attendance", icon: Clock },
     { id: "exams", label: "Exams/Tests", icon: BookOpen },
     { id: "performance", label: "Performance/Reports", icon: BarChart2 },
     { id: "calender", label: "Calendar/Schedule", icon: Calendar },
@@ -100,10 +104,10 @@ export default function Dashboard() {
 
         case "dashboard": return <TeacherDashboard />
         case "attendance": return <AttendanceTracking />
-        case "calender": return <InteractiveCalendar />
+        case "calender": return <CalendarPage />
         case "settings": return <SettingsComponent />
-        case "classes": return <TeacherClasses setActiveTab={setActiveTab} setSelectedClass={setSelectedClass} />
-        case "assignments": return <TeacherAssignment setActiveTab={setActiveTab} setSelectedAssignment={setSelectedAssignment} />
+        case "students": return <StudentsPage setActiveTab={setActiveTab} setSelectedClass={setSelectedClass} />
+        case "teachers": return <TeachersPage setActiveTab={setActiveTab} setSelectedAssignment={setSelectedAssignment} />
         case "add-assignment": return <AddAssignment />
         case "assignment-details": return <AssignmentDetails assignment={selectedAssignment} setActiveTab={setActiveTab} />
         case "class-details": return <ClassDetails selectedClass={selectedClass} setActiveTab={setActiveTab} />
@@ -119,7 +123,6 @@ export default function Dashboard() {
         case "classes": return <MyClasses />
         case "assignments": return <StudentAssignments />
         case "exams": return <StudentExams />
-        // case "attendance": return <AttendanceTracking />
         case "calender": return <StudentCalendar />
         case "performance": return <StudentPerformance />
         case "settings": return <SettingsComponent />
@@ -139,8 +142,8 @@ export default function Dashboard() {
         case "curriculumn": return <ContentCurriculum />
         case "feedback": return <FeedbackGrievances />
         case "announcement": return <GovernmentAnnouncement />
-        case "schemes": return <SchemesScholarships />
-        case "reports": return <div className="p-8">Reports view coming soon</div>
+        case "schemes": return <SchemesScholarships setActiveTab={setActiveTab} setSelectedScheme={setSelectedScheme} />
+        case "add-scheme": return <AddScheme />
         case "settings": return <SettingsComponent />
         default: return <div className="p-8 text-center text-gray-500">Coming soon...</div>
       }
@@ -230,9 +233,13 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={() => setShowNotifications(!showNotifications)} className="relative hover:bg-blue-100">
+            <div
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="relative hover:bg-blue-100 p-2 rounded-md cursor-pointer"
+            >
               <NotificationSystem />
-            </Button>
+            </div>
+
             <Button variant="ghost" size="sm" onClick={() => setShowChatbot(!showChatbot)} className="hover:bg-blue-100">
               <Bot className="w-5 h-5" />
             </Button>
@@ -259,14 +266,14 @@ export default function Dashboard() {
             </p> */}
           </div>
           <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
+            <div
               onClick={() => setShowNotifications(!showNotifications)}
-              className="relative hover:bg-blue-100"
+              className="relative hover:bg-blue-100 p-2 rounded-md cursor-pointer"
             >
               <NotificationSystem />
-            </Button>
+            </div>
+
+
             <Button
               variant="ghost"
               size="sm"

@@ -16,7 +16,7 @@ export default function AddAssignment() {
         <div className="p-6 max-w-4xl mx-auto">
             {/* Header */}
             <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">➕ Add New Assignment</h1>
+                <h1 className="text-2xl font-bold text-gray-800">Add New Assignment</h1>
                 <p className="text-gray-600 text-sm">
                     Create and assign homework/tasks to your students easily.
                 </p>
