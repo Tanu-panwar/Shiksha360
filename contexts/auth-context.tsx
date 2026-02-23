@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 
-export type UserRole = "student" | "teacher" | "admin" | "govt"
+export type UserRole = "STUDENT" | "TEACHER" | "ADMIN"
 
 export interface User {
   id: string
@@ -19,7 +19,7 @@ export interface User {
 
 interface AuthContextType {
   user: User | null
-  login: (email: string, password: string, role: UserRole) => void
+  login: (data: any) => Promise<any>
   logout: () => void
   updateUser: (updates: Partial<User>) => void
 }
@@ -36,26 +36,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const login = (email: string, password: string, role: UserRole) => {
-    const mockUser: User = {
-      id: `user-${Date.now()}`,
-      email,
-      name: email
-        .split("@")[0]
-        .replace(/[^a-zA-Z]/g, " ")
-        .replace(/\b\w/g, (l) => l.toUpperCase()),
-      role,
-      phone: "0000000000",
-      joinDate: new Date().toISOString(),
-      schoolId: role === "student" || role === "teacher" ? "school-123" : undefined,
-      departmentId: role === "govt" ? "dept-edu" : role === "admin" ? "dept-admin" : undefined,
-      assignedClasses: role === "teacher" ? ["class-1", "class-2"] : undefined,
-      assignedStudents: role === "teacher" ? ["student-1", "student-2"] : undefined,
+  const login = async (data: {
+  role: "STUDENT" | "TEACHER" | "ADMIN"
+  name: string
+  rollNo?: string
+  teacherId?: string
+  adminId?: string
+}) => {
+  try {
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    })
+
+    const result = await res.json()
+
+    if (!res.ok) {
+      throw new Error(result.error || "Login failed")
     }
 
-    setUser(mockUser)
-    localStorage.setItem("shiksha-user", JSON.stringify(mockUser))
+    localStorage.setItem("shiksha-token", result.token)
+    localStorage.setItem("shiksha-user", JSON.stringify(result.user))
+
+    setUser(result.user)
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, message: err.message }
   }
+}
+
 
   const logout = () => {
     setUser(null)

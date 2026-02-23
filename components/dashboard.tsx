@@ -13,8 +13,8 @@ import CalendarPage from "@/app/Teacher/components/TeacherCalendar"
 import { Settings as SettingsComponent } from "@/components/settings"
 import { NotificationSystem } from "@/components/notification-system"
 import { Chatbot } from "@/components/chatbot"
-import { TeacherDashboard } from "@/app/Teacher/teacher-dashboard"
-import { StudentDashboard } from "@/components/student-dashboard"
+import { TeacherDashboard } from "@/app/Teacher/page"
+import  StudentDashboard  from "@/app/student/page"
 import TeacherClasses from "@/app/Teacher/components/TeacherClasses";
 import TeacherAssignment from "@/app/Teacher/components/TeacherAssignment";
 import AddAssignment from "@/app/Teacher/components/AddAssignment"
@@ -30,15 +30,15 @@ import StudentCalendar from "./StudentCalendar"
 import StudentMidDayMeal from "./StudentMidDayMeal"
 import StudentGrades from "./StudentGrades"
 import StudentAnnouncements from "./StudentAnnouncements"
-import GovernmentDashboard from "../app/Goverment/GovernmentDashboard"
-import AddScheme from "../app/Goverment/AddScheme"
+import GovernmentDashboard from "@/app/admin/page"
+import AddScheme from "../app/admin/AddScheme"
 import InstitutionPage from "./InstitutionPage"
 import UserManagement from "./UserManagement"
 import PerformanceReports from "./PerformanceReports"
 import ContentCurriculum from "./ContentCurriculum "
 import FeedbackGrievances from "./FeedbackGrievances"
-import GovernmentAnnouncement from "../app/Goverment/GovernmentAnnouncement"
-import SchemesScholarships from "../app/Goverment/SchemesScholarships"
+import GovernmentAnnouncement from "../app/admin/GovernmentAnnouncement"
+import SchemesScholarships from "../app/admin/SchemesScholarships"
 import StudentsPage from "@/app/Teacher/students/page"
 import TeachersPage from "@/app/Teacher/teachers/page"
 
@@ -90,16 +90,16 @@ export default function Dashboard() {
     { id: "settings", label: "Settings", icon: Settings },
   ]
   const tabs =
-    user?.role === "teacher"
+    user?.role === "TEACHER"
       ? teacherTabs
-      : user?.role === "student"
+      : user?.role === "STUDENT"
         ? studentTabs
-        : user?.role === "govt"
+        : user?.role === "ADMIN"
           ? governmentTabs
           : []
 
   const renderContent = () => {
-    if (user?.role === "teacher") {
+    if (user?.role === "TEACHER") {
       switch (activeTab) {
 
         case "dashboard": return <TeacherDashboard />
@@ -117,7 +117,7 @@ export default function Dashboard() {
       }
     }
 
-    if (user?.role === "student") {
+    if (user?.role === "STUDENT") {
       switch (activeTab) {
         case "dashboard": return <StudentDashboard />
         case "classes": return <MyClasses />
@@ -133,7 +133,7 @@ export default function Dashboard() {
       }
     }
 
-    if (user?.role === "govt") {
+    if (user?.role === "ADMIN") {
       switch (activeTab) {
         case "dashboard": return <GovernmentDashboard />
         case "schools": return <InstitutionPage />
@@ -143,14 +143,10 @@ export default function Dashboard() {
         case "feedback": return <FeedbackGrievances />
         case "announcement": return <GovernmentAnnouncement />
         case "schemes": return <SchemesScholarships setActiveTab={setActiveTab} setSelectedScheme={setSelectedScheme} />
-        case "add-scheme": return <AddScheme />
+        case "add-scheme": return <AddScheme setActiveTab={undefined} />
         case "settings": return <SettingsComponent />
         default: return <div className="p-8 text-center text-gray-500">Coming soon...</div>
       }
-    }
-
-    if (user?.role === "admin") {
-      return <div className="p-8 text-center text-gray-500">Admin panel coming soon...</div>
     }
 
     return <div className="p-8 text-center text-gray-500">Coming soon...</div>
@@ -301,6 +297,7 @@ export default function Dashboard() {
           {renderContent()}
         </div>
       </div>
+
 
       {/* Chatbot */}
       {showChatbot && <Chatbot isOpen={showChatbot} onToggle={() => setShowChatbot(false)} />}

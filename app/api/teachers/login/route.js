@@ -1,4 +1,4 @@
-import connectDB from "@/lib/db"
+import {connectDB} from "@/lib/db"
 import Teacher from "@/models/Teacher"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"

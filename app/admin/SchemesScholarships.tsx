@@ -1,12 +1,27 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { Search, GraduationCap, Clock, Plus } from "lucide-react";
 import axios from "axios";
 
-const SchemesScholarships = ({ setActiveTab, setSelectedScheme }) => {
+type SchemesScholarshipsProps = {
+  setActiveTab: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedScheme: React.Dispatch<React.SetStateAction<any>>;
+};
+
+type Scheme = {
+  _id: string;
+  title?: string;
+  description?: string;
+  eligibility?: string;
+  deadline?: string;
+  status?: string;
+};
+
+const SchemesScholarships = ({ setActiveTab, setSelectedScheme }: SchemesScholarshipsProps) => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [schemes, setSchemes] = useState([]);
+  const [schemes, setSchemes] = useState<Scheme[]>([]);
   const [loading, setLoading] = useState(true);
 
   const itemsPerPage = 4;

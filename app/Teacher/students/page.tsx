@@ -1,10 +1,19 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import React, { useState, useEffect, useMemo } from "react"
 import AddStudentModal from "@/app/Teacher/components/AddStudentModal"
 import { Button } from "@/components/ui/button"
 
-export default function StudentsPage() {
+type StudentsPageProps = {
+  setActiveTab?: React.Dispatch<React.SetStateAction<string>>
+  setSelectedClass?: React.Dispatch<React.SetStateAction<any>>
+}
+
+export default function StudentsPage({
+  setActiveTab = () => {},
+  setSelectedClass = () => {},
+}: StudentsPageProps) {
+
   const [students, setStudents] = useState<any[]>([])
   const [filters, setFilters] = useState({ class: "", section: "", status: "", search: "" })
 
@@ -21,7 +30,10 @@ export default function StudentsPage() {
         (filters.class ? s.class === filters.class : true) &&
         (filters.section ? s.section === filters.section : true) &&
         (filters.status ? s.status === filters.status : true) &&
-        (filters.search ? s.name.toLowerCase().includes(filters.search.toLowerCase()) || String(s.roll).includes(filters.search) : true)
+        (filters.search
+          ? s.name.toLowerCase().includes(filters.search.toLowerCase()) ||
+            String(s.roll).includes(filters.search)
+          : true)
       )
     })
   }, [students, filters])
@@ -111,7 +123,9 @@ export default function StudentsPage() {
                   <td className="p-3">
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${
-                        s.status === "active" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                        s.status === "active"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
                       }`}
                     >
                       {s.status}

@@ -1,98 +1,223 @@
+"use client"
 
-'use client';
+import React, { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from "@/components/ui/card"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import {
+  FilePlus,
+  ImagePlus,
+  CheckSquare,
+  FileText,
+  Megaphone,
+  BarChart2,
+  Landmark,
+  BookOpenText,
+  School,
+  Utensils,
+} from "lucide-react";
+import { useAuth } from "@/contexts/auth-context"
+import { Button } from "@/components/ui/button";
 
-import Image from 'next/image';
-import Link from 'next/link';
+type StudentDashboardProps = {
+    setActiveTab?: React.Dispatch<React.SetStateAction<string>>
+    setSelectedClass?: React.Dispatch<React.SetStateAction<any>>
+}
 
-export default function StudentHomePage() {
+export default function StudentDashboard({
+    setActiveTab = () => { },
+    setSelectedClass = () => { },
+}: StudentDashboardProps) {
+    const { user } = useAuth()
+    const router = useRouter()
+
+    const [schemes, setSchemes] = useState<any[]>([]);
+    const [loadingSchemes, setLoadingSchemes] = useState(true);
+    const [openSchemeDialog, setOpenSchemeDialog] = useState(false);
+    const [selectedScheme, setSelectedScheme] = useState<any>(null);
+    const [activeScheme, setActiveScheme] = useState<any>(null);
+    // 🔐 PROTECT ROUTE
+    useEffect(() => {
+        const token = localStorage.getItem("shiksha-token")
+        if (!token || !user || user.role !== "STUDENT") {
+            router.push("/")
+        }
+    }, [user, router])
+
+    // FETCH GOVERNMENT SCHEMES
+    useEffect(() => {
+        fetch("/api/schemes")
+            .then((res) => res.json())
+            .then((result) => {
+                if (result.success) setSchemes(result.data);
+                setLoadingSchemes(false);
+            })
+            .catch((err) => {
+                console.error("Failed to fetch schemes", err);
+                setLoadingSchemes(false);
+            });
+    }, []);
+
     return (
-        <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-400 to-blue-600">
+        <div className="p-6 space-y-8">
 
-            {/* Main content area */}
-            <main className="flex-grow container mx-auto px-6 py-10 max-w-6xl">
-                <div className="bg-white rounded-3xl shadow-xl p-10 max-w-3xl mx-auto">
+            {/* DASHBOARD METRICS */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <MetricCard
+                    title="Assignments Received"
+                    description="Total assigned this month"
+                    value="18"
+                    color="text-blue-700"
+                    trend="↑ 4 from last month"
+                />
+                <MetricCard
+                    title="Assignments Submitted"
+                    description="Completed by you"
+                    value="14"
+                    color="text-green-700"
+                    trend="↑ 2 from last month"
+                />
+                <MetricCard
+                    title="Pending Assignments"
+                    description="Due soon"
+                    value="4"
+                    color="text-red-700"
+                    trend="↓ 1 from last week"
+                />
+            </div>
 
-                    {/* Header */}
-                    <div className="flex items-center space-x-5 mb-8">
-                        <Image
-                            src="/student_avatar.png"
-                            width={64}
-                            height={64}
-                            alt="Student Avatar"
-                            className="rounded-full"
-                        />
-                        <h1 className="text-3xl font-bold text-blue-800">
-                            Hello, Ravi <span role="img" aria-label="wave">👋</span>
-                        </h1>
+            {/* ROW 4: QUICK ACTIONS + GOVERNMENT ACTIVITIES */}
+            <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="bg-gray-50 p-4 rounded-md shadow-sm border border-gray-200">
+                    <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <Landmark className="w-5 h-5 text-gray-700" />
+                        Quick Actions
+                    </h2>
+                    <ul className="space-y-3">
+                        {[
+                            { icon: FilePlus, title: "Add Assignment", desc: "Create assignments by class & subject" },
+                            { icon: ImagePlus, title: "Upload Photos", desc: "Share class activity snapshots" },
+                            { icon: CheckSquare, title: "Mark Attendance", desc: "Daily student attendance" },
+                            { icon: FileText, title: "Upload Policy", desc: "Share updated school policies" },
+                            { icon: Megaphone, title: "Send Announcement", desc: "Notify students & parents" },
+                            { icon: BarChart2, title: "Generate Report", desc: "Performance & attendance reports" },
+                        ].map((action, i) => (
+                            <li
+                                key={i}
+                                className="bg-white hover:bg-gray-100 p-3 rounded-md border border-gray-300 cursor-pointer transition flex items-start gap-3"
+                            >
+                                <action.icon className="w-5 h-5 text-blue-600 mt-1" />
+                                <div>
+                                    <p className="font-medium text-gray-800">{action.title}</p>
+                                    <p className="text-xs text-gray-500">{action.desc}</p>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-md shadow-sm border border-gray-200">
+                    <h2 className="text-xl font-semibold text-gray-800 mb-4">🏛️ Government Activities</h2>
+                    <ul className="space-y-4">
+                        {[
+                            { title: "Digital India Scholarship 2024", desc: "Govt. scholarship for meritorious students", color: "indigo-500" },
+                            { title: "Mid-Day Meal Quality Check", desc: "Weekly nutrition assessment", color: "green-500" },
+                            { title: "Parent-Teacher Meeting", desc: "Scheduled for next week", color: "yellow-500" },
+                            { title: "Sports Day Preparation", desc: "Coordination with sports committee", color: "red-500" },
+                        ].map((act, i) => (
+                            <li key={i} className={`bg-white p-3 rounded-md border-l-4 border-${act.color} shadow-sm`}>
+                                <h3 className={`font-medium text-${act.color}`}>{act.title}</h3>
+                                <p className="text-sm text-gray-600">{act.desc}</p>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </section>
+
+            {/* GOVT SCHEMES DIALOG */}
+            <Dialog open={openSchemeDialog} onOpenChange={setOpenSchemeDialog}>
+                <DialogContent className="max-w-4xl max-h-[650px] overflow-hidden">
+                    <DialogHeader>
+                        <DialogTitle className="text-lg font-semibold">Government Schemes & Notifications</DialogTitle>
+                    </DialogHeader>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[520px]">
+                        {/* LEFT: SCHEME LIST */}
+                        <div className="overflow-y-auto p-2 border-r">
+                            {loadingSchemes && schemes.length === 0 ? (
+                                <p className="text-sm text-gray-500">Loading schemes...</p>
+                            ) : schemes.length === 0 ? (
+                                <p className="text-sm text-gray-500">No schemes found.</p>
+                            ) : (
+                                schemes.map((sch) => (
+                                    <div
+                                        key={sch._id}
+                                        onClick={() => setSelectedScheme(sch)}
+                                        className={`p-3 mb-2 rounded-md cursor-pointer transition ${selectedScheme?._id === sch._id
+                                                ? "bg-indigo-50 border-indigo-500 border"
+                                                : "bg-white border border-gray-200 hover:bg-gray-50"
+                                            }`}
+                                    >
+                                        <p className="font-semibold text-gray-800">{sch.title}</p>
+                                        <p className="text-xs text-gray-500 line-clamp-2">{sch.description}</p>
+                                        <div className="text-xs text-gray-400 mt-1">{sch.fieldType?.toUpperCase()} • {sch.status}</div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        {/* RIGHT: SCHEME DETAILS */}
+                        <div className="overflow-y-auto p-4">
+                            {!selectedScheme ? (
+                                <div className="flex h-full items-center justify-center text-gray-400 text-center">
+                                    <p>Select a scheme to view details</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    <h3 className="text-xl font-bold text-indigo-700">{selectedScheme.title}</h3>
+                                    <p className="text-sm text-gray-600"><strong>Category:</strong> {selectedScheme.fieldType || "N/A"}</p>
+                                    <p className="text-sm text-gray-600"><strong>Status:</strong> {selectedScheme.status || "N/A"}</p>
+                                    <p className="text-sm text-gray-600"><strong>Eligibility:</strong> {selectedScheme.eligibility || "N/A"}</p>
+                                    <p className="text-sm text-gray-600"><strong>Deadline:</strong> {selectedScheme.deadline || "N/A"}</p>
+                                    <hr />
+                                    <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">{selectedScheme.description}</p>
+                                    <div className="flex gap-3 mt-4">
+                                        <Button variant="default">Apply / More</Button>
+                                        <Button variant="outline" onClick={() => setSelectedScheme(null)}>Back to list</Button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    {/* Overall Progress */}
-                    <section className="mb-10">
-                        <p className="font-semibold text-gray-700 mb-3">Overall Progress</p>
-                        <div className="relative w-full bg-blue-100 rounded-full h-6 shadow-inner overflow-hidden">
-                            <div className="absolute top-0 left-0 h-6 bg-blue-700 rounded-full transition-all duration-700" style={{ width: '65%' }}></div>
+                    <DialogFooter>
+                        <div className="flex justify-end w-full">
+                            <Button onClick={() => setOpenSchemeDialog(false)}>Close</Button>
                         </div>
-                        <p className="text-gray-500 mt-2">65% Complete</p>
-                    </section>
-
-                    {/* Stats cards */}
-                    <section className="grid grid-cols-3 gap-6 mb-12 cursor-pointer">
-                        <Link href="/student/subjects" className="bg-blue-50 rounded-xl text-center p-5 shadow-md hover:shadow-lg transition">
-                            <div className="text-5xl">📚</div>
-                            <p className="font-semibold mt-3 text-gray-700">5 Subjects</p>
-                        </Link>
-
-                        <Link href="/student/badges" className="bg-blue-50 rounded-xl text-center p-5 shadow-md hover:shadow-lg transition">
-                            <div className="text-5xl text-yellow-600">🏅</div>
-                            <p className="font-semibold mt-3 text-gray-700">12 Badges</p>
-                        </Link>
-
-                        <Link href="/student/rank" className="bg-blue-50 rounded-xl text-center p-5 shadow-md hover:shadow-lg transition">
-                            <div className="text-5xl text-yellow-800">🏆</div>
-                            <p className="font-semibold mt-3 text-gray-700">Top 20%</p>
-                        </Link>
-                    </section>
-
-                    {/* Daily tasks */}
-                    <section className="bg-blue-50 rounded-xl p-7 shadow-md mb-12">
-                        <h2 className="text-xl font-semibold mb-4 flex items-center space-x-2">
-                            <span className="text-blue-700">🔵</span>
-                            <span>Daily Tasks</span>
-                        </h2>
-                        <ul className="list-disc list-inside text-gray-800 space-y-2">
-                            <li>
-                                <Link href="/student/tasks/finish-math" className="hover:underline line-through text-green-600">
-                                    Finish 2 Math exercises
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/student/tasks/read-science" className="hover:underline">
-                                    Read Science Chapter 3
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/student/tasks/practice-english" className="hover:underline">
-                                    Practice 5 English words
-                                </Link>
-                            </li>
-                        </ul>
-                    </section>
-
-                    {/* Career tip */}
-                    <section className="bg-blue-50 rounded-xl p-7 shadow-md">
-                        <h2 className="text-xl font-semibold mb-4 flex items-center space-x-2">
-                            <span className="text-yellow-500">💡</span>
-                            <span>Career Tip of the Day</span>
-                        </h2>
-                        <p className="text-gray-800 mb-4">
-                            You are doing great in Mathematics! <span role="img" aria-label="star">⭐</span> Explore careers in Engineering, Data Science or Finance.
-                        </p>
-                        <Link href="/student/career-guidance" className="text-blue-700 font-semibold hover:underline">
-                            Explore More &rarr;
-                        </Link>
-                    </section>
-                </div>
-            </main>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
-    );
+    )
+}
+
+function MetricCard({ title, description, value, color, trend }: any) {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>{title}</CardTitle>
+                <CardDescription>{description}</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <p className={`text-3xl font-bold ${color}`}>{value}</p>
+                <p className="text-xs text-muted-foreground">{trend}</p>
+            </CardContent>
+        </Card>
+    )
 }

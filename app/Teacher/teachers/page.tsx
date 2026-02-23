@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
@@ -8,17 +8,25 @@ import { toast } from "sonner"
 
 import AddTeacherModal from "@/app/Teacher/components/AddTeacherModal"
 import TeacherAuthModal from "@/app/Teacher/components/TeacherAuthModal"
-import TeacherDashboard from "@/app/Teacher/components/TeacherDashboard";
+import TeacherDashboard from "@/app/Teacher/components/TeacherDashboard"
 
+type TeachersPageProps = {
+  setActiveTab?: React.Dispatch<React.SetStateAction<string>>
+  setSelectedAssignment?: React.Dispatch<React.SetStateAction<any>>
+}
 
-export default function TeachersPage() {
+export default function TeachersPage({
+  setActiveTab = () => {},
+  setSelectedAssignment = () => {},
+}: TeachersPageProps) {
+
   const [teachers, setTeachers] = useState<any[]>([])
   const [selectedTeacher, setSelectedTeacher] = useState<any | null>(null)
 
   const [addModalOpen, setAddModalOpen] = useState(false)
   const [authModalOpen, setAuthModalOpen] = useState(false)
 
-  const [loggedInTeacher, setLoggedInTeacher] = useState<any | null>(null) // ✅ NEW
+  const [loggedInTeacher, setLoggedInTeacher] = useState<any | null>(null)
 
   const fetchTeachers = async () => {
     try {
@@ -104,7 +112,7 @@ export default function TeachersPage() {
         setOpen={setAuthModalOpen}
         teacher={selectedTeacher}
         onLoginSuccess={(teacher: any) => {
-          setLoggedInTeacher(teacher) // ✅ DASHBOARD OPEN HERE
+          setLoggedInTeacher(teacher)
         }}
       />
     </div>

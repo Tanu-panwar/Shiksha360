@@ -18,10 +18,14 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import axios from "axios";
-import Swal from "sweetalert2"; // <-- ADDED
+import axios, { AxiosError } from "axios"
+import Swal from "sweetalert2";
 
-export default function AddScheme({ setActiveTab }) {
+type AddSchemeProps = {
+  setActiveTab?: (tab: string) => void
+}
+
+export default function AddScheme({ setActiveTab }: AddSchemeProps) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     schemeName: "",
@@ -83,11 +87,12 @@ export default function AddScheme({ setActiveTab }) {
       // 👇 After success go back to schemes list page
       if (setActiveTab) setActiveTab("schemes");
     } catch (error) {
+      const err = error as AxiosError<any>
       Swal.fire({
         icon: "error",
         title: "Failed to Save",
-        text: error.response?.data?.error || "Something went wrong!",
-      });
+        text: err.response?.data?.error || "Something went wrong!",
+      })
     }
     setLoading(false);
   };

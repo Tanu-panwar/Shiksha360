@@ -1,5 +1,5 @@
 "use client";
-
+import React from "react";
 
 import {
   Card,
@@ -29,9 +29,19 @@ import type { ChartOptions } from "chart.js";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
-export default function TeacherDashboard() {
+type TeacherDashboardProps = {
+  teacher: any;
+  setActiveTab?: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedAssignment?: React.Dispatch<React.SetStateAction<any>>;
+};
 
-  /* ------------------ CHART DATA ------------------ */
+export default function TeacherDashboard({
+  teacher,
+  setActiveTab = () => {},
+  setSelectedAssignment = () => {},
+}: TeacherDashboardProps) {
+
+  /* ------------------ CHART DATA (DUMMY) ------------------ */
   const performanceData = {
     labels: ["Class 6", "Class 7", "Class 8"],
     datasets: [
@@ -55,7 +65,7 @@ export default function TeacherDashboard() {
     },
   };
 
-  /* ------------------ ACTIVITY ------------------ */
+  /* ------------------ ACTIVITY (DUMMY) ------------------ */
   const activities = [
     {
       icon: <BookOpenText className="w-5 h-5 text-blue-600" />,
@@ -77,7 +87,7 @@ export default function TeacherDashboard() {
   return (
     <div className="p-6 space-y-8">
 
-      {/* ================= METRICS ================= */}
+      {/* ================= METRICS (DUMMY) ================= */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <MetricCard
           title="My Classes"
